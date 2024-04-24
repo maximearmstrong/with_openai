@@ -1,4 +1,0 @@
-locations:
-- code_source:
-    module_name: with_openai
-  location_name: with_openai
