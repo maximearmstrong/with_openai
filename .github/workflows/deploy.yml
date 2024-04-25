@@ -41,6 +41,11 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           path: project-repo
+      - name: Install git
+        if: steps.prerun.outputs.result == 'pex-deploy'
+        run: |
+          apt-get install git
+        shell: bash
           
       - name: Python Executable Deploy
         if: steps.prerun.outputs.result == 'pex-deploy'
