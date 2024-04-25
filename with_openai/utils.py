@@ -1,6 +1,7 @@
 import os
 import pathlib
 import tempfile
+import subprocess
 
 import requests
 from git import Repo
@@ -20,8 +21,16 @@ def get_wiki_data(title, first_paragraph_only):
 
 def get_github_docs(repo_owner, repo_name, category):
     with tempfile.TemporaryDirectory() as d:
-        repo = Repo.clone_from(f"https://github.com/{repo_owner}/{repo_name}.git", d, depth=1)
-        git_sha = repo.rev_parse("HEAD").hexsha
+        #repo = Repo.clone_from(f"https://github.com/{repo_owner}/{repo_name}.git", d, depth=1)
+        #git_sha = repo.rev_parse("HEAD").hexsha
+        subprocess.check_call(
+            f"/usr/bin/git clone --depth 1 https://github.com/{repo_owner}/{repo_name}.git .",
+            cwd=d,
+            shell=True,
+        )
+        git_sha = (
+            subprocess.check_output("/usr/bin/git rev-parse HEAD", shell=True, cwd=d).decode("utf-8").strip()
+        )
         docs_path = pathlib.Path(os.path.join(d, "docs/content", category))
         markdown_files = list(docs_path.glob("*.md*")) + list(docs_path.glob("*/*.md*"))
         for markdown_file in markdown_files:
