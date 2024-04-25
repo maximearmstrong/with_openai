@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import pickle
 
 from dagster import (
@@ -55,17 +56,18 @@ def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_
             source_chunks, OpenAIEmbeddings(client=client.embeddings)
         )
 
-    with FileLock(SEARCH_INDEX_FILE):
-        context.log.info(os.getcwd())
-        if os.path.getsize(SEARCH_INDEX_FILE) > 0:
-            with open(SEARCH_INDEX_FILE, "rb") as f:
+    search_index_path = Path(os.getcwd()).joinpath(SEARCH_INDEX_FILE)
+    context.log.info(search_index_path)
+    with FileLock(search_index_path):
+        if os.path.getsize(search_index_path) > 0:
+            with open(search_index_path, "rb") as f:
                 serialized_search_index = pickle.load(f)
             cached_search_index = FAISS.deserialize_from_bytes(
                 serialized_search_index, OpenAIEmbeddings()
             )
             search_index.merge_from(cached_search_index)
 
-        with open(SEARCH_INDEX_FILE, "wb") as f:
+        with open(search_index_path, "wb") as f:
             pickle.dump(search_index.serialize_to_bytes(), f)
 
 
@@ -80,7 +82,9 @@ def completion(
         openai: OpenAIResource,
         config: OpenAIConfig,
 ):
-    with open(SEARCH_INDEX_FILE, "rb") as f:
+    search_index_path = Path(os.getcwd()).joinpath(SEARCH_INDEX_FILE)
+    context.log.info(search_index_path)
+    with open(search_index_path, "rb") as f:
         serialized_search_index = pickle.load(f)
     search_index = FAISS.deserialize_from_bytes(serialized_search_index, OpenAIEmbeddings())
     with openai.get_client(context) as client:
