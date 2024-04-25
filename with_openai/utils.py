@@ -4,7 +4,6 @@ import tempfile
 import subprocess
 
 import requests
-from git import Repo
 from langchain.docstore.document import Document
 
 
