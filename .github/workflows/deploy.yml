@@ -56,6 +56,7 @@ jobs:
           python_version: "${{ env.PYTHON_VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_PYTHON_GIT_EXECUTABLE: "/usr/bin/git"
 
   dagster_cloud_docker_deploy:
     name: Docker Deploy
