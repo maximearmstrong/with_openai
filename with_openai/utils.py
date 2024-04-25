@@ -19,9 +19,9 @@ def get_wiki_data(title, first_paragraph_only):
     )
 
 
-def get_github_docs(repo_owner, repo_name, category):
+def get_github_docs(repo_owner, repo_name, category, archive_name="master"):
     with tempfile.TemporaryDirectory() as d:
-        archive_name = "master"  # The archive name can be a branch, tag or commit.
+        # The archive name can be a branch, tag or commit.
         r = requests.get(f"https://github.com/{repo_owner}/{repo_name}/archive/{archive_name}.zip")
         z = zipfile.ZipFile(io.BytesIO(r.content))
         z.extractall(d)
