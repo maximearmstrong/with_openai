@@ -56,7 +56,7 @@ def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_
         )
 
     with FileLock(SEARCH_INDEX_FILE):
-        context.log.info(os.cwd())
+        context.log.info(os.getcwd())
         if os.path.getsize(SEARCH_INDEX_FILE) > 0:
             with open(SEARCH_INDEX_FILE, "rb") as f:
                 serialized_search_index = pickle.load(f)
