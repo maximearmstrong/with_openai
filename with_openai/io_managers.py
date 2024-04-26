@@ -46,4 +46,4 @@ search_index_io_manager = SearchIndexIOManager(root_path="/tmp/")
 if bool(os.getenv("DAGSTER_IS_DEV_CLI")):
     io_manager = FilesystemIOManager()
 else:
-    io_manager_key = S3PickleIOManager(s3_resource=S3Resource(), s3_bucket="with_openai")
+    io_manager = S3PickleIOManager(s3_resource=S3Resource(), s3_bucket="with_openai")
