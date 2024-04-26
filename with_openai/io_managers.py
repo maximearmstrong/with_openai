@@ -33,6 +33,7 @@ class SearchIndexIOManager(ConfigurableIOManager):
             with open(output_path, "wb") as f:
                 pickle.dump(obj.serialize_to_bytes(), f)
             context.log.info(os.listdir(self.root_path))
+        context.log.info(os.listdir(self.root_path))
 
     def load_input(self, context: InputContext):
         context.log.info(os.listdir(self.root_path))
