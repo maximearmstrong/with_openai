@@ -11,6 +11,7 @@ from dagster import (
     AllPartitionMapping,
     AssetIn
 )
+from dagster_aws import S3Resource
 from dagster_openai import OpenAIResource
 from filelock import FileLock
 from langchain.chains.qa_with_sources import stuff_prompt
@@ -46,6 +47,10 @@ if bool(os.getenv("DAGSTER_IS_DEV_CLI")):
 else:
     io_manager_key = "io_manager"
 
+
+@asset
+def s3_asset(context: AssetExecutionContext, s3: S3Resource):
+    context.log.info(s3.get_client().list_buckets())
 
 # io_manager_key="fs_io_manager"
 @asset(compute_kind="GitHub", partitions_def=docs_partitions_def, io_manager_key=io_manager_key)
