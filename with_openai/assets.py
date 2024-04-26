@@ -11,7 +11,7 @@ from dagster import (
     AllPartitionMapping,
     AssetIn
 )
-from dagster_aws import S3Resource
+from dagster_aws.s3 import S3Resource
 from dagster_openai import OpenAIResource
 from filelock import FileLock
 from langchain.chains.qa_with_sources import stuff_prompt
