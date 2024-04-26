@@ -8,12 +8,12 @@ from dagster import (
     SensorResult,
     load_assets_from_modules,
     sensor,
+    FilesystemIOManager
 )
 from dagster_openai import OpenAIResource
 
 from . import assets
 from .assets import question_job, search_index_job
-from .io_managers import io_manager
 
 
 @sensor(job=question_job)
@@ -50,14 +50,12 @@ all_jobs = [question_job, search_index_job]
 all_sensors = [question_sensor]
 
 
-
-
 defs = Definitions(
     assets=all_assets,
     jobs=all_jobs,
     resources={
         "openai": OpenAIResource(api_key=EnvVar("OPENAI_API_KEY")),
-        "io_manager": io_manager,
+        "fs_io_manager": FilesystemIOManager(),
     },
     sensors=all_sensors,
 )

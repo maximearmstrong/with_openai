@@ -41,15 +41,20 @@ docs_partitions_def = StaticPartitionsDefinition(
     ]
 )
 
+if bool(os.getenv("DAGSTER_IS_DEV_CLI")):
+    io_manager_key = "fs_io_manager"
+else:
+    io_manager_key = "s3_io_manager"
+
 
 # io_manager_key="fs_io_manager"
-@asset(compute_kind="GitHub", partitions_def=docs_partitions_def, io_manager_key="io_manager")
+@asset(compute_kind="GitHub", partitions_def=docs_partitions_def, io_manager_key=io_manager_key)
 def source_docs(context: AssetExecutionContext):
     return list(get_github_docs("dagster-io", "dagster", context.partition_key))
 
 
 # io_manager_key="search_index_io_manager"
-@asset(compute_kind="OpenAI", partitions_def=docs_partitions_def, io_manager_key="io_manager")
+@asset(compute_kind="OpenAI", partitions_def=docs_partitions_def, io_manager_key=io_manager_key)
 def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_docs: List[Any]):
     source_chunks = []
     splitter = CharacterTextSplitter(separator=" ", chunk_size=1024, chunk_overlap=0)
@@ -76,7 +81,7 @@ class OpenAIConfig(Config):
     ins={
         "search_index": AssetIn(partition_mapping=AllPartitionMapping()),
     },
-    io_manager_key="io_manager"
+    io_manager_key=io_manager_key
 )
 def completion(
     context: AssetExecutionContext,
