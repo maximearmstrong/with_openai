@@ -44,7 +44,7 @@ docs_partitions_def = StaticPartitionsDefinition(
 if bool(os.getenv("DAGSTER_IS_DEV_CLI")):
     io_manager_key = "fs_io_manager"
 else:
-    io_manager_key = "s3_io_manager"
+    io_manager_key = "io_manager"
 
 
 # io_manager_key="fs_io_manager"
