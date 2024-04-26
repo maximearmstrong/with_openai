@@ -1,5 +1,6 @@
 import os
 import pickle
+from Typing import Dict, List, Any
 
 from dagster import (
     AssetExecutionContext,
@@ -49,7 +50,7 @@ def source_docs(context: AssetExecutionContext):
 
 # io_manager_key="search_index_io_manager"
 @asset(compute_kind="OpenAI", partitions_def=docs_partitions_def)
-def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_docs):
+def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_docs: List[Any]):
     source_chunks = []
     splitter = CharacterTextSplitter(separator=" ", chunk_size=1024, chunk_overlap=0)
     for source in source_docs:
@@ -80,8 +81,9 @@ def completion(
     context: AssetExecutionContext,
     openai: OpenAIResource,
     config: OpenAIConfig,
-    search_index
+    search_index: Dict[str, Any]
 ):
+    context.log.info(search_index.values())
     merged_index = None
     for index in search_index.values():
         curr = FAISS.deserialize_from_bytes(index, OpenAIEmbeddings())
