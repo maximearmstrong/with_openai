@@ -1,6 +1,6 @@
 import os
 import pickle
-from Typing import Dict, List, Any
+from typing import Dict, List, Any
 
 from dagster import (
     AssetExecutionContext,
