@@ -12,6 +12,7 @@ from dagster import (
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores.faiss import FAISS
 
+
 class SearchIndexIOManager(ConfigurableIOManager):
     root_path: str
 
@@ -31,8 +32,10 @@ class SearchIndexIOManager(ConfigurableIOManager):
 
             with open(output_path, "wb") as f:
                 pickle.dump(obj.serialize_to_bytes(), f)
+            context.log.info(os.listdir(self.root_path))
 
     def load_input(self, context: InputContext):
+        context.log.info(os.listdir(self.root_path))
         input_path = self._get_path(context.asset_key)
         with open(input_path, "rb") as f:
             serialized_search_index = pickle.load(f)
