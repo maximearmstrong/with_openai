@@ -22,7 +22,7 @@ class SearchIndexIOManager(ConfigurableIOManager):
     def handle_output(self, context: OutputContext, obj):
         output_path = self._get_path(context.asset_key)
         with FileLock(output_path):
-            if output_path.exist():
+            if os.path.getsize(output_path) > 0:
                 context.log.info("exist")
                 with open(output_path, "rb") as f:
                     serialized_search_index = pickle.load(f)
