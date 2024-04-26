@@ -36,13 +36,14 @@ docs_partitions_def = StaticPartitionsDefinition(
 )
 
 
-@asset(compute_kind="GitHub", partitions_def=docs_partitions_def, io_manager_key="fs_io_manager")
+# io_manager_key="fs_io_manager"
+@asset(compute_kind="GitHub", partitions_def=docs_partitions_def)
 def source_docs(context: AssetExecutionContext):
-    context.log.info(os.listdir("/tmp/"))
     return list(get_github_docs("dagster-io", "dagster", context.partition_key))
 
 
-@asset(compute_kind="OpenAI", partitions_def=docs_partitions_def, io_manager_key="search_index_io_manager")
+# io_manager_key="search_index_io_manager"
+@asset(compute_kind="OpenAI", partitions_def=docs_partitions_def)
 def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_docs):
     source_chunks = []
     splitter = CharacterTextSplitter(separator=" ", chunk_size=1024, chunk_overlap=0)
@@ -56,19 +57,19 @@ def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_
             source_chunks, OpenAIEmbeddings(client=client.embeddings)
         )
 
-    return search_index
+    #return search_index
 
-    #with FileLock(SEARCH_INDEX_FILE):
-    #    if os.path.getsize(SEARCH_INDEX_FILE) > 0:
-    #        with open(SEARCH_INDEX_FILE, "rb") as f:
-    #            serialized_search_index = pickle.load(f)
-    #        cached_search_index = FAISS.deserialize_from_bytes(
-    #            serialized_search_index, OpenAIEmbeddings()
-    #        )
-    #        search_index.merge_from(cached_search_index)
+    with FileLock(SEARCH_INDEX_FILE):
+        if os.path.getsize(SEARCH_INDEX_FILE) > 0:
+            with open(SEARCH_INDEX_FILE, "rb") as f:
+                serialized_search_index = pickle.load(f)
+            cached_search_index = FAISS.deserialize_from_bytes(
+                serialized_search_index, OpenAIEmbeddings()
+            )
+            search_index.merge_from(cached_search_index)
 
-    #    with open(SEARCH_INDEX_FILE, "wb") as f:
-    #        pickle.dump(search_index.serialize_to_bytes(), f)
+        with open(SEARCH_INDEX_FILE, "wb") as f:
+            pickle.dump(search_index.serialize_to_bytes(), f)
 
 
 class OpenAIConfig(Config):
@@ -76,16 +77,17 @@ class OpenAIConfig(Config):
     question: str
 
 
-@asset(compute_kind="OpenAI", io_manager_key="fs_io_manager")
+# io_manager_key="fs_io_manager"
+@asset(compute_kind="OpenAI")
 def completion(
         context: AssetExecutionContext,
         openai: OpenAIResource,
         config: OpenAIConfig,
         search_index
 ):
-    #with open(SEARCH_INDEX_FILE, "rb") as f:
-    #    serialized_search_index = pickle.load(f)
-    #search_index = FAISS.deserialize_from_bytes(serialized_search_index, OpenAIEmbeddings())
+    with open(SEARCH_INDEX_FILE, "rb") as f:
+        serialized_search_index = pickle.load(f)
+    search_index = FAISS.deserialize_from_bytes(serialized_search_index, OpenAIEmbeddings())
     with openai.get_client(context) as client:
         prompt = stuff_prompt.PROMPT
         model = ChatOpenAI(client=client.chat.completions, model=config.model, temperature=0)
