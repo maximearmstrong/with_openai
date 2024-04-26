@@ -38,6 +38,7 @@ docs_partitions_def = StaticPartitionsDefinition(
 
 @asset(compute_kind="GitHub", partitions_def=docs_partitions_def, io_manager_key="fs_io_manager")
 def source_docs(context: AssetExecutionContext):
+    context.log.info(os.listdir())
     return list(get_github_docs("dagster-io", "dagster", context.partition_key))
 
 
