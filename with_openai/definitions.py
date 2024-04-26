@@ -13,6 +13,7 @@ from dagster_openai import OpenAIResource
 
 from . import assets
 from .assets import question_job, search_index_job
+from .io_managers import io_manager
 
 
 @sensor(job=question_job)
@@ -56,6 +57,7 @@ defs = Definitions(
     jobs=all_jobs,
     resources={
         "openai": OpenAIResource(api_key=EnvVar("OPENAI_API_KEY")),
+        "io_manager": io_manager,
     },
     sensors=all_sensors,
 )

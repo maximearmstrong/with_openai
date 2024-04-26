@@ -43,13 +43,13 @@ docs_partitions_def = StaticPartitionsDefinition(
 
 
 # io_manager_key="fs_io_manager"
-@asset(compute_kind="GitHub", partitions_def=docs_partitions_def)
+@asset(compute_kind="GitHub", partitions_def=docs_partitions_def, io_manager_key="io_manager")
 def source_docs(context: AssetExecutionContext):
     return list(get_github_docs("dagster-io", "dagster", context.partition_key))
 
 
 # io_manager_key="search_index_io_manager"
-@asset(compute_kind="OpenAI", partitions_def=docs_partitions_def)
+@asset(compute_kind="OpenAI", partitions_def=docs_partitions_def, io_manager_key="io_manager")
 def search_index(context: AssetExecutionContext, openai: OpenAIResource, source_docs: List[Any]):
     source_chunks = []
     splitter = CharacterTextSplitter(separator=" ", chunk_size=1024, chunk_overlap=0)
@@ -75,7 +75,8 @@ class OpenAIConfig(Config):
     compute_kind="OpenAI",
     ins={
         "search_index": AssetIn(partition_mapping=AllPartitionMapping()),
-    }
+    },
+    io_manager_key="io_manager"
 )
 def completion(
     context: AssetExecutionContext,

@@ -7,8 +7,9 @@ from dagster import (
     ConfigurableIOManager,
     AssetKey,
     InputContext,
-    OutputContext
+    OutputContext,
 )
+from dagster_aws.s3 import S3PickleIOManager, S3Resource
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores.faiss import FAISS
 
@@ -40,5 +41,9 @@ class SearchIndexIOManager(ConfigurableIOManager):
         return FAISS.deserialize_from_bytes(serialized_search_index, OpenAIEmbeddings())
 
 
-fs_io_manager = FilesystemIOManager()
 search_index_io_manager = SearchIndexIOManager(root_path="/tmp/")
+
+if bool(os.getenv("DAGSTER_IS_DEV_CLI")):
+    io_manager = FilesystemIOManager()
+else:
+    io_manager_key = S3PickleIOManager(s3_resource=S3Resource(), s3_bucket="with_openai")
