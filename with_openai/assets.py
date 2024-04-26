@@ -11,12 +11,12 @@ from dagster import (
 from dagster_openai import OpenAIResource
 from filelock import FileLock
 from langchain.chains.qa_with_sources import stuff_prompt
-from langchain_openai.chat_models.openai import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.docstore.document import Document
-from langchain_openai.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain.schema.output_parser import StrOutputParser
 from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.vectorstores.faiss import FAISS
+from langchain_community.vectorstores import FAISS
 
 from .constants import SEARCH_INDEX_FILE, SUMMARY_TEMPLATE
 from .utils import get_github_docs
