@@ -23,7 +23,6 @@ class SearchIndexIOManager(ConfigurableIOManager):
         output_path = self._get_path(context.asset_key)
         with FileLock(output_path):
             if os.path.getsize(output_path) > 0:
-                context.log.info("exist")
                 with open(output_path, "rb") as f:
                     serialized_search_index = pickle.load(f)
                 cached_search_index = FAISS.deserialize_from_bytes(
@@ -33,11 +32,8 @@ class SearchIndexIOManager(ConfigurableIOManager):
 
             with open(output_path, "wb") as f:
                 pickle.dump(obj.serialize_to_bytes(), f)
-            context.log.info(os.listdir(self.root_path))
-        context.log.info(os.listdir(self.root_path))
 
     def load_input(self, context: InputContext):
-        context.log.info(os.listdir(self.root_path))
         input_path = self._get_path(context.asset_key)
         with open(input_path, "rb") as f:
             serialized_search_index = pickle.load(f)
