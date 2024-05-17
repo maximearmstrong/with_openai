@@ -25,9 +25,7 @@ def get_github_docs(repo_owner, repo_name, category, archive_name="master"):
         r = requests.get(f"https://github.com/{repo_owner}/{repo_name}/archive/{archive_name}.zip")
         z = zipfile.ZipFile(io.BytesIO(r.content))
         z.extractall(d)
-        root_path = pathlib.Path(
-            os.path.join(d, f"{repo_name}-{archive_name}")
-        )
+        root_path = pathlib.Path(os.path.join(d, f"{repo_name}-{archive_name}"))
         docs_path = root_path.joinpath("docs/content", category)
         markdown_files = list(docs_path.glob("*.md*")) + list(docs_path.glob("*/*.md*"))
         for markdown_file in markdown_files:
