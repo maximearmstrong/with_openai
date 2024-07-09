@@ -13,7 +13,7 @@ env:
   DAGSTER_CLOUD_URL: "http://test-dagster-openai.dagster.cloud"
   DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
   # ENABLE_FAST_DEPLOYS: 'true'
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.8'
   DAGSTER_CLOUD_FILE: 'dagster_cloud.yaml'
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Build and deploy to Dagster Cloud serverless
-        uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1.40
+        uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1.43
         with:
           dagster_cloud_api_token: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
           location: ${{ toJson(matrix.location) }}
